@@ -1,6 +1,6 @@
 import spacy
-from spacy.matcher import Matcher
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+from transformers import AutoTokenizer, AutoModelForTokenClassification, AutoModel, pipeline
+from sentence_transformers import SentenceTransformer, util
 
 
 nlp = spacy.load("en_core_web_md")
@@ -13,6 +13,10 @@ model = AutoModelForTokenClassification.from_pretrained(model_name)
 
 ner = pipeline("ner", model=model, tokenizer=tokenizer,
                aggregation_strategy="simple")
+
+
+# sentence-transformers/all-roberta-large-v1
+embed_model = SentenceTransformer("all-mpnet-base-v2")
 
 cs_cv = """
 
@@ -511,12 +515,11 @@ def func_cv(cv):
             email_professor = ent.text
             break
 
-    entities = ner(cv)
-
     print(f"professor name: {name_professor}")
 
     print(f"professor email: {email_professor}")
 
+    entities = ner(cv)
     skills = {ent['word'] for ent in entities if ent['entity_group']
               in {"TECHNICAL", "TECHNOLOGY", "BUSINESS", "SOFT"}}
     print("Extracted Skills:")
@@ -524,21 +527,57 @@ def func_cv(cv):
         print("-", skill)
 
 
-def func_course(course):
-    doc_course = nlp(course)
-    course_id = "failed"
-    for ent in doc_course.ents:
-        if ent.label_ == "COURSE_ID":
-            course_id = ent.text
-            break
-
-    start_idx = course.find(f"- {course_id}")
-    course_name = course[:start_idx].strip().rstrip("-").strip()
-    print(f"Course ID: {course_id}")
-    print(f"Course Name: {course_name}")
+def skip_line(line: str):
+    """Return True if line is metadata or irrelevant."""
+    line = line.lower()
+    return any(kw in line for kw in [
+        "email", "phone", "office", "contact", "address", "reviewer", "room", "turing hall"
+    ]) or len(line.strip()) < 5
 
 
-print("CV: \n")
-func_cv(history_cv)
-print("Course Description: \n")
-func_course(course_cs)
+def extract_relevant_cv_sentences(cv_text, course_text, top_n=5):
+    # Split and filter CV lines
+    lines = [
+        line.strip()
+        for line in cv_text.split("\n")
+        if len(line.strip()) > 5 and not skip_line(line)
+    ]
+
+    course_embedding = embed_model.encode(course_text, convert_to_tensor=True)
+
+    scored_lines = []
+    for line in lines:
+        line_embedding = embed_model.encode(line, convert_to_tensor=True)
+        sim = util.cos_sim(line_embedding, course_embedding).item()
+        scored_lines.append((sim, line))
+
+    # Sort and pick top N lines
+    top_lines = sorted(scored_lines, key=lambda x: x[0], reverse=True)[:top_n]
+
+    # Print scores and lines for inspection
+    for score, sentence in top_lines:
+        print(f"Score: {score:.3f} | Sentence: {sentence}")
+
+    return [line for _, line in top_lines]
+
+
+def compute_cv_course_similarity(cv_text, course_text):
+    top_sentences = extract_relevant_cv_sentences(
+        cv_text, course_text, top_n=5)
+
+    combined_text = " ".join(top_sentences)
+    combined_embedding = embed_model.encode(
+        combined_text, convert_to_tensor=True)
+    course_embedding = embed_model.encode(course_text, convert_to_tensor=True)
+
+    similarity_score = util.cos_sim(
+        combined_embedding, course_embedding).item()
+    return round(similarity_score, 3)
+
+
+# print("CV: \n")
+# func_cv(abdo_abou_jaoude_cv)
+# print("Course Description: \n")
+# func_course(course_math)
+print(
+    f"similarity score: {compute_cv_course_similarity(mathematics_cv, course_math)}")
