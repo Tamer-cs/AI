@@ -1,0 +1,112 @@
+history_cv = """
+
+Mr. Jonathan Meyers
+
+History Teacher
+Greenwood High School
+
+Contact Information
+Email: jmeyers@greenwood.edu.lb
+Office: Humanities Building, Room 212
+Phone: (555) 987-6543
+
+Education
+M.A. in History, University of Chicago (2012)
+B.A. in History & Political Science, University of Michigan (2009)
+
+Teaching Experience
+World History (High School)
+European History (Advanced Placement)
+American History and Government
+Historical Research Methods
+
+Research Interests
+Ancient Civilizations
+World War II Strategy & Politics
+Middle Eastern History
+Colonialism and Post-Colonial Studies
+
+Publications & Projects
+Meyers, J. (2021). "Teaching WWII Through Multimedia Narratives." Journal of Historical Education.
+Meyers, J. (2019). "Decolonizing the Curriculum: A High School Approach." Presented at the National History Teachers Conference.
+
+Awards
+Greenwood Teacher of the Year (2020)
+Illinois Excellence in Social Studies Education (2017)
+
+Professional Involvement
+Member, National Council for History Education (NCHE)
+Curriculum Advisor, Greenwood District Education Board
+
+"""
+
+biology_cv = """
+
+Dr. Nour El-Haddad
+Assistant Professor - Molecular Biology
+Faculty of Science, Phoenicia University
+
+Email: nour.haddad@phoenicia.edu.lb
+Office: Science Complex, Lab 6A
+Phone: (555) 778-4455
+
+Education
+Ph.D. in Molecular Genetics, Stanford University (2017)
+B.Sc. in Biology, Lebanese University (2011)
+
+Teaching Experience
+- Molecular Biology
+- Genetics and Cell Biology
+- Research Methods in Biology
+- Genetic Engineering
+
+Research Interests
+- CRISPR-Cas9 Applications
+- Epigenetics and Cancer Therapy
+- Genomic Data Analysis
+
+Publications
+El-Haddad, N. (2023). “CRISPR Editing Efficiency in Mammalian Cells.” Nature Biotechnology.
+El-Haddad, N. (2021). “Non-coding RNA in Tumor Progression.” Cancer Research Letters.
+
+Grants & Awards
+NIH Research Grant (2022)
+Best Poster - EMBL Genomics Conference (2020)
+
+"""
+
+arts_cv = """
+
+Prof. Layla Zahran
+Professor of Visual Arts
+Beirut College of Arts and Design
+
+Email: l.zahran@bcad.edu.lb
+Office: Visual Arts Building, Room 2F
+Phone: (555) 901-4478
+
+Education
+M.F.A. in Visual Communication, School of the Art Institute of Chicago (2012)
+B.F.A. in Graphic Design, LAU (2007)
+
+Teaching Experience
+- Visual Storytelling
+- Graphic Design Studio
+- History of Modern Art
+- Typography and Communication
+
+Research Interests
+- Post-war Arab Visual Culture
+- Digital Art & Identity
+- Feminist Aesthetics
+
+Exhibitions & Projects
+Zahran, L. (2023). “Beirut Fragments” - Solo Exhibition, Sursock Museum
+Zahran, L. (2020). “Designing Resistance” - Collaborative Project, AUB Art Gallery
+
+Awards
+Arab Women in Arts Prize (2022)
+National Design Award - Typography Category (2021)
+
+"""
+
