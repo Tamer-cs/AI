@@ -26,7 +26,7 @@
 
 ***********************************************************************************************
 
-cs_cv: """
+cs_cv_structured= """
 Dr. Evelyn Carter, Professor of Computer Science
 Department of Computer Science, Notre Dame University - Louaize
 
@@ -60,7 +60,7 @@ Algorithms: Design, Optimization, Data structures
 
 """
 
-math_cv: """
+math_cv_structured= """
 
 Dr. Mahmoud Atallah, Professor of Mathematics
 Department of Mathematics, Al-Farabi University
@@ -92,7 +92,7 @@ Logic: Mathematical logic, Proof theory
 
 """
 
-english_cv: """
+english_cv= """
 Dr. Jonathan P. Whitmore, Professor of English Literature
 Department of English & Comparative Literature, Kingsbridge University
 

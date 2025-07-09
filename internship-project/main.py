@@ -2,7 +2,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import re
 from transformers import AutoTokenizer, AutoModelForTokenClassification, AutoModel, pipeline
-from sentence_transformers import SentenceTransformer, util
+from sentence_transformers import SentenceTransformer, CrossEncoder, util
 
 
 nlp = spacy.load("en_core_web_md")
@@ -13,12 +13,18 @@ model_name = "algiraldohe/lm-ner-linkedin-skills-recognition"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForTokenClassification.from_pretrained(model_name)
 
+
 ner = pipeline("ner", model=model, tokenizer=tokenizer,
                aggregation_strategy="simple")
 
 
 # sentence-transformers/all-roberta-large-v1
 embed_model = SentenceTransformer("all-mpnet-base-v2")
+
+bi_encoder = SentenceTransformer("BAAI/bge-large-en-v1.5")
+# reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+reranker = CrossEncoder("cross-encoder/stsb-roberta-base")
+
 
 cs_cv = """
 
@@ -90,36 +96,37 @@ Reviewer for IEEE Transactions on Neural Networks
 """
 
 cs_cv_structured = """
-Dr. Evelyn Carter, Professor of Computer Science
+Dr. Evelyn Carter, Professor of Computer Science  
 Department of Computer Science, Notre Dame University - Louaize
 
 ##Contact Information
-Email: ecarter@ndu.edu.lb
-Office: Turing Hall, Room 405
-Phone: (555) 123-4567
+- Email: ecarter@ndu.edu.lb  
+- Office: Turing Hall, Room 405  
+- Phone: (555) 123-4567  
 
 ##Education
-Ph.D. in Computer Science, Stanford University (2010)
-M.Sc. in Artificial Intelligence, MIT (2006)
-B.Sc. in Computer Science, University of Cambridge (2004)
+- Ph.D. in Computer Science, Stanford University (2010)  
+- M.Sc. in Artificial Intelligence, MIT (2006)  
+- B.Sc. in Computer Science, University of Cambridge (2004)  
 
 ##Teaching Experience
-Notre Dame University - Louaize
-CSC 600: Advanced Machine Learning (Graduate)
-CSC 450: Introduction to Quantum Computing (Undergraduate/Graduate)
-CSC 210: Algorithms & Data Structures (Undergraduate)
-CSC 320: Cybersecurity Fundamentals (Undergraduate)
+Notre Dame University - Louaize  
+- CSC 600: Advanced Machine Learning (Graduate)  
+- CSC 450: Introduction to Quantum Computing (Undergraduate/Graduate)  
+- CSC 210: Algorithms & Data Structures (Undergraduate)  
+- CSC 320: Cybersecurity Fundamentals (Undergraduate)  
 
 ##Publications (Selected)
-Carter, E., & Zhang, L. (2023). "Hybrid Quantum-Classical Neural Networks for Secure Data Classification." Nature Computing Science.
-Carter, E., et al. (2021). "Optimizing Deep Learning Models for Edge Devices." Journal of AI Research.
-Carter, E. (2018). "A Novel Approach to Post-Quantum Cryptography." ACM Transactions on Security.
+- Carter, E., & Zhang, L. (2023). "Hybrid Quantum-Classical Neural Networks for Secure Data Classification." Nature Computing Science.  
+- Carter, E., et al. (2021). "Optimizing Deep Learning Models for Edge Devices." Journal of AI Research.  
+- Carter, E. (2018). "A Novel Approach to Post-Quantum Cryptography." ACM Transactions on Security.  
 
 ##Skills & Expertise
-Quantum Computing: Quantum algorithms, Quantum machine learning
-Machine Learning: Deep learning, Neural networks, Model optimization
-Cybersecurity: Cryptography, Post-quantum cryptography
-Algorithms: Design, Optimization, Data structures
+- Quantum Computing: Quantum algorithms, Quantum machine learning  
+- Machine Learning: Deep learning, Neural networks, Model optimization  
+- Cybersecurity: Cryptography, Post-quantum cryptography  
+- Algorithms: Design, Optimization, Data structures  
+
 
 """
 
@@ -159,6 +166,38 @@ Editor - Middle East Mathematics Review
 
 """
 
+mathematics_cv_structured = """
+
+Dr. Mahmoud Atallah, Professor of Mathematics  
+Department of Mathematics, Al-Farabi University
+
+##Contact Information
+- Email: matallah@alfarabi.edu.lb  
+- Office: Math Building, Room 207  
+- Phone: (555) 665-8832  
+
+##Education
+- Ph.D. in Pure Mathematics (Topology), University of Cambridge (2008)  
+- M.Sc. in Applied Mathematics, American University of Cairo (2003)  
+
+##Teaching Experience
+Al-Farabi University  
+- MAT 401: Real Analysis (Undergraduate)  
+- MAT 350: Abstract Algebra (Undergraduate)  
+- MAT 360: Topology and Geometry (Undergraduate)  
+- MAT 370: Mathematical Logic (Undergraduate)  
+
+##Publications (Selected)
+- Atallah, M. (2022). "Fixed-Point Theorems in Generalized Topological Spaces." Journal of Pure Math.  
+- Atallah, M. (2019). "Combinatorial Methods in Number Theory."  
+
+##Skills & Expertise
+- Pure Mathematics: Topology, Algebraic structures  
+- Number Theory: Combinatorics, Modular arithmetic  
+- Applied Math: Mathematical modeling in epidemiology  
+
+
+"""
 
 english_cv = """
 
@@ -261,6 +300,43 @@ French (Advanced)
 Latin (Reading Proficiency)
 
 """
+
+english_cv_structured = """
+Dr. Jonathan P. Whitmore, Professor of English Literature  
+Department of English & Comparative Literature, Kingsbridge University
+
+##Contact Information
+- Email: j.whitmore@kingsbridge.edu  
+- Phone: (555) 123-4567  
+
+##Education
+- Ph.D. in English Literature, Oxford University (2005)  
+- M.A. in English Literature, University of Cambridge (2001)  
+- B.A. (Hons) in English, King's College London (1999)  
+
+##Teaching Experience
+Kingsbridge University  
+- ENG 301: Postmodern British Fiction (Undergraduate)  
+- ENG 245: Gothic Literature: From Walpole to Winterson (Undergraduate)  
+- ENG 150: Critical Theory & Literary Analysis (Undergraduate)  
+- ENG 701: Memory & Narrative in Contemporary Fiction (Graduate)  
+- ENG 720: Digital Humanities & Literary Studies (Graduate)  
+
+##Publications (Selected)
+- Whitmore, J. (2017). "Phantoms of the Page: Ghosts, Memory, and the Novel." Cambridge University Press.  
+- Whitmore, J. (2011). "The Unwritten Past: Postmodern Hauntings in British Fiction." Palgrave Macmillan.  
+- Whitmore, J. (2023). "Digital Echoes: Algorithmic Hauntings in Hypertext Literature." Modern Fiction Studies, 69(2), 45-67.  
+- Whitmore, J. (2021). "The Ghost in the Machine: AI and the Future of Literary Analysis." New Literary History, 52(3), 321-340.  
+- Whitmore, J. (2018). "Revenants of the Real: Spectral Memory in Ian McEwan's Atonement." Contemporary Literature, 59(4), 512-535.  
+
+##Skills & Expertise
+- British Literature: Postmodern fiction, Contemporary narratives  
+- Theoretical Frameworks: Spectrality, Memory studies, Trauma theory  
+- Digital Humanities: Literary AI, Algorithmic analysis, Hypertext  
+
+
+"""
+
 
 course_cs = """
 
@@ -379,9 +455,11 @@ def unstructured_cv_course_similarity(cv_text, course_text):  # unstructured CV
 
 
 def extract_section(cv_text, section_name):
-
+    """
+    Extracts a section from structured CV using '##Section Name' headers.
+    Returns empty string if section not found.
+    """
     try:
-
         section_part = cv_text.split(f"##{section_name}")[1]
         section_content = section_part.split("##")[0].strip()
         return section_content
@@ -390,35 +468,65 @@ def extract_section(cv_text, section_name):
 
 
 def extract_publication_titles(cv_text):
-
+    """
+    Extracts paper titles in quotes from the 'Publications' section.
+    """
     publications = extract_section(cv_text, "Publications (Selected)")
     if not publications:
         return ""
-
     titles = re.findall(r'"(.*?)"', publications)
     return " ".join(titles)
 
 
-def structured_cv_course_similarity(cv_text, course_text):
+def score_section(section_text, course_text):
+    """
+    Uses the CrossEncoder to compute similarity score between section and course.
+    Returns 0 if section is empty.
+    """
+    if not section_text.strip():
+        return 0.0
+    score = reranker.predict([(course_text, section_text)])[
+        0]  # already normalized [0, 1]
+    return round(float(score), 3)
 
+
+def structured_cv_course_similarity(cv_text, course_text, weights=None):
+    """
+    Computes weighted similarity score using structured CV fields.
+    You can optionally pass a dictionary of weights for the fields.
+    """
+    # Extract relevant sections
     teaching = extract_section(cv_text, "Teaching Experience")
     skills = extract_section(cv_text, "Skills & Expertise")
     publications = extract_publication_titles(cv_text)
 
-    combined = f"""
-    TEACHING: {teaching}
-    SKILLS: {skills}
-    PUBLICATIONS: {publications}
-    """
+    # Compute similarity scores
+    teaching_score = score_section(teaching, course_text)
+    skills_score = score_section(skills, course_text)
+    publications_score = score_section(publications, course_text)
 
-    print(combined)
+    # Default equal weights if none provided
+    if weights is None:
+        weights = {"teaching": 1.0, "skills": 1.0, "publications": 1.0}
 
-    combined_embedding = embed_model.encode(combined)
-    course_embedding = embed_model.encode(course_text)
+    total_weight = sum(weights.values())
+    final_score = (
+        teaching_score * weights["teaching"] +
+        skills_score * weights["skills"] +
+        publications_score * weights["publications"]
+    ) / total_weight
 
-    similarity_score = util.cos_sim(
-        combined_embedding, course_embedding).item()
-    return round(similarity_score, 3)
+    print(f"  Teaching:     {teaching_score}")
+    print(f"  Skills:       {skills_score}")
+    print(f"  Publications: {publications_score}")
+    print(f"  Final Score:  {round(final_score, 3)}")
+
+    return {
+        "teaching_score": teaching_score,
+        "skills_score": skills_score,
+        "publications_score": publications_score,
+        "final_score": round(final_score, 3)
+    }
 
 
 """****************************************************************************************************************************************"""
@@ -428,6 +536,6 @@ def structured_cv_course_similarity(cv_text, course_text):
 # print("Course Description: \n")
 # func_course(course_math)
 print(
-    f"similarity score: {unstructured_cv_course_similarity(english_cv, course_cs)}")
+    f"unstructured similarity score: {unstructured_cv_course_similarity(cs_cv, course_cs)}")
 print(
-    f"similarity score: {structured_cv_course_similarity(cs_cv_structured, course_cs)}")
+    f"structured similarity score: {structured_cv_course_similarity(cs_cv_structured, course_cs)}")
